@@ -1,1 +1,13 @@
-.form-section{font-size:16px;line-height:22px;margin:28px 0 8px}.tool-choice{display:flex!important;align-items:center;gap:10px}.tool-choice input{flex:0 0 auto}.tool-choice span{min-width:0}.tool-choice small{display:block;margin-top:3px;text-align:left}.selected-count{font-size:14px;font-weight:700;color:#315525}.empty-inline{padding:16px;border:1px dashed #9AA193;border-radius:16px;color:#667061;font-size:14px}
+.form-section{font-size:16px;line-height:22px;margin:0 0 10px}.tool-choice{display:flex!important;align-items:center;gap:10px}.tool-choice input{flex:0 0 auto}.tool-choice span{min-width:0}.tool-choice small{display:block;margin-top:3px;text-align:left}.selected-count{font-size:14px;font-weight:700;color:#315525}.empty-inline{padding:16px;border:1px dashed #9AA193;border-radius:16px;color:#667061;font-size:14px}
+
+html,body,#root{max-width:100%;overflow-x:hidden}.overlay{width:100vw;max-width:100%;overflow:hidden}.sheet{box-sizing:border-box;width:100vw;max-width:680px;min-width:0;max-height:100dvh;scrollbar-gutter:stable}.sheet input,.sheet select{max-width:100%;min-width:0}.sheet>label,.sheet .new-client{min-width:0}.sheet .new-client{margin-top:12px}.sheet .new-client input{width:100%}
+
+/* Бронирование: две даты образуют одну ровную строку только там, где ей хватает места. */
+.sheet:has(.tool-choice)>h3.form-section:nth-of-type(2)+label,.sheet:has(.tool-choice)>h3.form-section:nth-of-type(2)+label+label{display:inline-block;width:calc(50% - 8px);vertical-align:top;margin-top:0}.sheet:has(.tool-choice)>h3.form-section:nth-of-type(2)+label+label{margin-left:12px}.sheet:has(.tool-choice)>h3.form-section:nth-of-type(2)+label+label+label{display:block;width:100%;margin-top:16px}
+
+/* Внутренний номер теперь технический: в карточке и форме его не показываем. */
+.list>div:nth-child(2)>small{display:none}
+
+@media(max-width:680px){.overlay{align-items:stretch}.sheet{height:100dvh;max-height:100dvh;border-radius:0;padding:calc(20px + env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}.sheet .row{flex-wrap:wrap}.sheet .bottom{position:sticky;bottom:-24px;padding:16px 0 calc(16px + env(safe-area-inset-bottom));margin-bottom:-24px;background:#F6F7F1}.sheet .bottom .primary,.sheet .bottom .secondary{flex:1;min-width:0;padding:0 14px}}
+@media(max-width:430px){.sheet:has(.tool-choice)>h3.form-section:nth-of-type(2)+label,.sheet:has(.tool-choice)>h3.form-section:nth-of-type(2)+label+label{display:block;width:100%;margin-left:0;margin-top:16px}.sheet:has(.tool-choice)>h3.form-section:nth-of-type(2)+label{margin-top:0}}
+@media(min-width:681px){.sheet{width:min(680px,100vw)}}
