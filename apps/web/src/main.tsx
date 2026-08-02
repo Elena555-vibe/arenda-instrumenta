@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import {localApi} from './local-api';
 import './style.css';
 import './calendar.css';
+import './modal.css';
 
 type Tool={id:string;name:string;internal_number:string;daily_rate:number;default_deposit:number;status:string;brand?:string;model?:string}; type Rental={id:string;full_name:string;tools:string[];issue_date:string;planned_return_date:string;final_rental_amount:number;status:string}; type Booking={id:string;full_name:string;tools:string[];start_date:string;planned_return_date:string;status:string};
 const money=(n:number)=>new Intl.NumberFormat('ru-RU').format(n)+' ₽'; const date=(d:string)=>new Date(d+'T00:00:00').toLocaleDateString('ru-RU');
