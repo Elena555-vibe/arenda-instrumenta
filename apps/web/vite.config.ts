@@ -18,7 +18,7 @@ export default defineConfig({
         theme_color: '#315525',
         icons: [{ src: 'app-icon-maskable.png', sizes: '1254x1254', type: 'image/png', purpose: 'any maskable' }]
       },
-      workbox: { navigateFallback: 'index.html' }
+      workbox: { navigateFallback: 'index.html', clientsClaim: true, skipWaiting: true, cleanupOutdatedCaches: true }
     })
   ]
 });
