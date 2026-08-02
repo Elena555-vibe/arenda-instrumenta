@@ -1,0 +1,37 @@
+.home-title {
+  margin-top: 0;
+}
+
+.today-summary {
+  margin-top: 32px;
+  padding: 16px 20px;
+  border-radius: 20px;
+  background: #e6ead9;
+}
+
+.today-summary > p {
+  margin: 0 0 6px;
+  color: #667061;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.today-summary > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+  border-top: 1px solid rgba(45, 59, 43, .12);
+  color: #2d3b2b;
+}
+
+.today-summary > div:first-of-type {
+  border-top: 0;
+}
+
+.today-summary b {
+  font-size: 17px;
+}
