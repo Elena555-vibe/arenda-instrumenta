@@ -2,10 +2,6 @@
   "name": "tool-rental-pwa",
   "private": true,
   "packageManager": "pnpm@9.15.4",
-  "scripts": {
-    "dev": "pnpm --parallel --filter @rental/web --filter @rental/api dev",
-    "build": "pnpm -r build",
-    "test": "pnpm -r test"
-  },
+  "scripts": { "dev": "pnpm --filter @rental/web dev", "build": "pnpm --filter @rental/web build", "test": "pnpm --filter @rental/web test" },
   "devDependencies": { "typescript": "^5.7.3" }
 }
