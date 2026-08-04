@@ -22,6 +22,13 @@ export async function localApi<T>(url:string,options?:RequestInit):Promise<T>{
   if(method==='GET'&&path==='/api/dashboard'){const due=today();const rentals=d.rentals.filter(r=>r.status==='active');return {today:due,counters:{overdue:rentals.filter(r=>r.planned_return_date<due).length,due_today:rentals.filter(r=>r.planned_return_date===due).length,pickup_today:d.bookings.filter(b=>b.status==='active'&&b.start_date===due).length},rentals:clone(rentals)} as T}
   if(method==='POST'&&path==='/api/clients'){const client={id:id(),...body};d.clients.push(client);await save(d);return clone(client) as T}
   if(method==='POST'&&path==='/api/tools'){if(d.tools.some(t=>t.internal_number===body.internal_number))throw new Error('Не удалось создать инструмент');const tool={id:id(),status:'available',...body};d.tools.push(tool);await save(d);return clone(tool) as T}
+  const returnMatch=path.match(/^\/api\/rentals\/([^/]+)\/return$/);
+  if(method==='POST'&&returnMatch){
+    const rental=d.rentals.find(r=>r.id===returnMatch[1]);if(!rental||rental.status!=='active')throw new Error('Эта аренда уже закрыта или не найдена');
+    rental.status='completed';
+    rental.tool_ids.forEach(toolId=>{const tool=d.tools.find(t=>t.id===toolId);if(!tool)return;const hasBooking=d.bookings.some(b=>b.status==='active'&&(b.tool_ids?.includes(toolId)||(!b.tool_ids&&b.tools?.includes(tool.name)))&&b.planned_return_date>=today());tool.status=hasBooking?'reserved':'available'});
+    await save(d);return clone(rental) as T
+  }
   if(method==='POST'&&path==='/api/rentals'){
     if(!body.client_id||!body.tool_ids?.length)throw new Error('Выберите клиента и хотя бы один инструмент');const chosen=d.tools.filter(t=>body.tool_ids.includes(t.id));
     if(chosen.length!==body.tool_ids.length||chosen.some(t=>t.status!=='available'))throw new Error('Выберите только доступные инструменты');
