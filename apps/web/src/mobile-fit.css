@@ -5,6 +5,7 @@ main,.content,.card,.list,.empty,.sheet,.new-client,.calendar{max-width:100%;min
 .list>div{min-width:0}
 .list b,.list small,.tool-choice b,.tool-choice small{overflow-wrap:anywhere}
 .list .chip{max-width:100%;white-space:normal;text-align:center}
+.tool-toolbar{align-items:stretch}.add-tool{display:flex;align-items:center;justify-content:center;gap:7px;min-height:52px;padding:0 18px;border-radius:18px;background:#6FAE52;color:#fff;font-weight:800;font-size:15px;box-shadow:0 8px 18px rgba(72,128,51,.22)}.add-tool:first-letter{font-size:24px}.tool-actions{grid-column:2/-1;display:flex;gap:10px;margin-top:2px}.tool-actions .secondary{flex:1}.delete-tool{padding:0 8px;color:#A43D31;font-size:13px;font-weight:700}
 .tool-list .tool-copy{overflow:hidden}.tool-list .tool-copy b{display:block}.tool-list .tool-copy small{display:block;margin-top:4px;text-align:left}.tool-list .tool-meta{display:grid;justify-items:end;gap:5px;min-width:0}.tool-list .tool-meta small{white-space:nowrap}
 
 @media(max-width:430px){
@@ -14,4 +15,5 @@ main,.content,.card,.list,.empty,.sheet,.new-client,.calendar{max-width:100%;min
   .list>div:last-child small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .tool-list .tool-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
   .primary,.secondary{max-width:100%;white-space:normal}
+  .add-tool{min-width:52px;padding:0 14px}.add-tool span{display:none}
 }
