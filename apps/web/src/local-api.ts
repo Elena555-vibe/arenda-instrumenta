@@ -2,7 +2,7 @@ import { localRead, localWrite } from './offline';
 
 type Client={id:string;full_name:string;phone:string};
 type Tool={id:string;name:string;internal_number:string;daily_rate:number;default_deposit:number;purchase_cost:number;status:string};
-type Rental={id:string;client_id:string;full_name:string;tools:string[];tool_ids:string[];issue_date:string;planned_return_date:string;returned_date?:string;final_rental_amount:number;status:string};
+type Rental={id:string;client_id:string;full_name:string;phone?:string;tools:string[];tool_ids:string[];issue_date:string;planned_return_date:string;returned_date?:string;final_rental_amount:number;status:string};
 type Data={tools:Tool[];clients:Client[];rentals:Rental[];bookings:any[];maintenance?:any[]};
 
 const key='single-user-data';
@@ -17,7 +17,7 @@ export async function localApi<T>(url:string,options?:RequestInit):Promise<T>{
   const d=await data();const method=options?.method??'GET';const body=options?.body?JSON.parse(String(options.body)):{};const path=url.split('?')[0];
   if(method==='GET'&&path==='/api/tools'){const q=new URLSearchParams(url.split('?')[1]??'').get('q')?.toLowerCase()??'';return clone(d.tools.filter(t=>!q||t.name.toLowerCase().includes(q))) as T}
   if(method==='GET'&&path==='/api/clients')return clone(d.clients) as T;
-  if(method==='GET'&&path==='/api/rentals')return clone(d.rentals) as T;
+  if(method==='GET'&&path==='/api/rentals')return clone(d.rentals.map(r=>({...r,phone:r.phone??d.clients.find(c=>c.id===r.client_id)?.phone??''}))) as T;
   if(method==='GET'&&path==='/api/bookings')return clone(d.bookings) as T;
   if(method==='GET'&&path==='/api/reports'){const params=new URLSearchParams(url.split('?')[1]??'');const from=params.get('from')??'0000-01-01';const to=params.get('to')??'9999-12-31';const rentals=d.rentals.filter(r=>r.status==='completed'&&((r.returned_date??r.planned_return_date)>=from)&&((r.returned_date??r.planned_return_date)<=to));return clone({total:rentals.reduce((sum,r)=>sum+r.final_rental_amount,0),rentals}) as T}
   if(method==='GET'&&path==='/api/dashboard'){const due=today();const rentals=d.rentals.filter(r=>r.status==='active');return {today:due,counters:{overdue:rentals.filter(r=>r.planned_return_date<due).length,due_today:rentals.filter(r=>r.planned_return_date===due).length,pickup_today:d.bookings.filter(b=>b.status==='active'&&b.start_date===due).length},rentals:clone(rentals)} as T}
@@ -44,7 +44,7 @@ export async function localApi<T>(url:string,options?:RequestInit):Promise<T>{
     if(chosen.some(hasRentalConflict))throw new Error('Инструмент уже занят в другой аренде на выбранные даты');
     if(chosen.some(hasBookingConflict))throw new Error('Инструмент уже забронирован на выбранные даты');
     const days=Math.max(1,Math.round((Date.parse(body.planned_return_date)-Date.parse(body.issue_date))/86400000));const amount=body.final_rental_amount||chosen.reduce((s,t)=>s+t.daily_rate*days,0);const client=d.clients.find(c=>c.id===body.client_id)!;
-    const rental={id:id(),client_id:client.id,full_name:client.full_name,tools:chosen.map(t=>t.name),tool_ids:chosen.map(t=>t.id),issue_date:body.issue_date,planned_return_date:body.planned_return_date,final_rental_amount:amount,status:'active'};chosen.forEach(t=>t.status='rented');d.rentals.push(rental);await save(d);return clone(rental) as T
+    const rental={id:id(),client_id:client.id,full_name:client.full_name,phone:client.phone,tools:chosen.map(t=>t.name),tool_ids:chosen.map(t=>t.id),issue_date:body.issue_date,planned_return_date:body.planned_return_date,final_rental_amount:amount,status:'active'};chosen.forEach(t=>t.status='rented');d.rentals.push(rental);await save(d);return clone(rental) as T
   }
   if(method==='POST'&&path==='/api/bookings'){
     const chosen=d.tools.filter(t=>body.tool_ids?.includes(t.id));if(!body.client_id||!chosen.length)throw new Error('Выберите клиента и инструмент');
