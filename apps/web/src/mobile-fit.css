@@ -1,19 +1,9 @@
 /* Жёсткие границы для телефона: ни один блок не может расширить страницу. */
-main,.content,.card,.list,.empty,.sheet,.new-client,.calendar{max-width:100%;min-width:0}
-.card,.list,.empty{overflow:hidden}
-.list{grid-template-columns:44px minmax(0,1fr) auto}
-.list>div{min-width:0}
-.list b,.list small,.tool-choice b,.tool-choice small{overflow-wrap:anywhere}
-.list .chip{max-width:100%;white-space:normal;text-align:center}
-.tool-toolbar{align-items:stretch}.add-tool{display:flex;align-items:center;justify-content:center;gap:7px;min-height:52px;padding:0 18px;border-radius:18px;background:#6FAE52;color:#fff;font-weight:800;font-size:15px;box-shadow:0 8px 18px rgba(72,128,51,.22)}.add-tool:first-letter{font-size:24px}.tool-list{position:relative}.tool-list .tool-meta{padding-right:30px}.tool-menu{position:absolute;top:10px;right:10px;z-index:1}.tool-menu-trigger{width:32px;height:32px;border-radius:50%;font-size:24px;line-height:20px;color:#667061}.tool-menu-trigger:hover{background:#E6EAD9}.tool-menu-popup{position:absolute;right:0;top:36px;display:flex;align-items:center;gap:4px;padding:6px;background:#fff;border:1px solid #E5E8DF;border-radius:14px;box-shadow:0 8px 24px rgba(31,53,25,.12)}.tool-menu-popup button{min-height:36px;padding:0 10px;white-space:nowrap;font-weight:700}.tool-menu-popup .trash-button{width:36px;padding:0;font-size:17px}
-.tool-list .tool-copy{overflow:hidden}.tool-list .tool-copy b{display:block}.tool-list .tool-copy small{display:block;margin-top:4px;text-align:left}.tool-list .tool-meta{display:grid;justify-items:end;gap:5px;min-width:0}.tool-list .tool-meta small{white-space:nowrap}
+main,.content,.card,.list,.empty,.sheet,.new-client,.calendar{max-width:100%;min-width:0}.card,.list,.empty{overflow:hidden}.list:not(.tool-list){grid-template-columns:44px minmax(0,1fr) auto}.list>div{min-width:0}.list b,.list small,.tool-choice b,.tool-choice small{overflow-wrap:anywhere}.list .chip{max-width:100%;white-space:normal;text-align:center}
 
-@media(max-width:430px){
-  main{width:100%;padding-left:16px;padding-right:16px}
-  .list{grid-template-columns:42px minmax(0,1fr);gap:10px}
-  .list>div:last-child{grid-column:2;display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
-  .list>div:last-child small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .tool-list .tool-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
-  .primary,.secondary{max-width:100%;white-space:normal}
-  .add-tool{min-width:52px;padding:0 14px}.add-tool span{display:none}
-}
+.tool-toolbar{align-items:stretch}.add-tool{display:flex;align-items:center;justify-content:center;gap:7px;min-height:52px;padding:0 18px;border-radius:18px;background:#6FAE52;color:#fff;font-weight:800;font-size:15px;box-shadow:0 8px 18px rgba(72,128,51,.22)}.add-tool:first-letter{font-size:24px}
+
+/* Карточка инструмента: две ясные строки, действия не вмешиваются в сетку. */
+.tool-list{display:flex;align-items:flex-start;gap:12px;padding:16px;overflow:visible}.tool-list .tool-icon{flex:0 0 44px}.tool-content{flex:1;min-width:0}.tool-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;min-height:34px}.tool-heading>div:first-child{min-width:0}.tool-heading b{display:block;font-size:18px;line-height:24px}.tool-heading small{display:block;margin-top:2px;text-align:left}.tool-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}.tool-meta small{white-space:nowrap;text-align:right}.tool-menu{position:relative;flex:0 0 auto}.tool-menu-trigger{width:36px;height:36px;border-radius:50%;font-size:24px;line-height:20px;color:#667061}.tool-menu-trigger:hover{background:#E6EAD9}.tool-menu-popup{position:absolute;right:0;top:40px;display:flex;align-items:center;gap:4px;padding:6px;background:#fff;border:1px solid #E5E8DF;border-radius:14px;box-shadow:0 8px 24px rgba(31,53,25,.12);z-index:4}.tool-menu-popup button{min-height:36px;padding:0 10px;white-space:nowrap;font-weight:700}.tool-menu-popup .trash-button{width:36px;padding:0;font-size:17px}
+
+@media(max-width:430px){main{width:100%;padding-left:16px;padding-right:16px}.list:not(.tool-list){grid-template-columns:42px minmax(0,1fr);gap:10px}.list:not(.tool-list)>div:last-child{grid-column:2;display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}.list:not(.tool-list)>div:last-child small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tool-heading b{font-size:17px}.tool-meta{gap:8px}.tool-meta .chip{font-size:11px;padding:5px 8px}.primary,.secondary{max-width:100%;white-space:normal}.add-tool{min-width:52px;padding:0 14px}.add-tool span{display:none}}
