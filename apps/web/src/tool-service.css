@@ -1,0 +1,19 @@
+.tool-menu-popup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 184px;
+}
+
+.tool-menu-popup > button:not(.trash-button) {
+  grid-column: 1 / -1;
+  width: 100%;
+  text-align: left;
+}
+
+.tool-menu-popup .service-action {
+  color: #315525;
+}
+
+.tool-menu-popup .trash-button {
+  justify-self: end;
+}
