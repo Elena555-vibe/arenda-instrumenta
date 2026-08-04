@@ -22,14 +22,40 @@
   text-align: center;
 }
 
-.report-dates input {
-  border-radius: 24px;
-  font-weight: 700;
-  text-align: center;
+.report-dates label > span:first-child {
+  display: block;
+  text-transform: uppercase;
 }
 
-.report-dates input::-webkit-date-and-time-value {
-  text-align: center;
+.report-date-field {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 52px;
+  margin-top: 8px;
+  border-radius: 24px;
+  border: 1px solid #E5E8DF;
+  background: #fff;
+  font-weight: 700;
+  line-height: 1;
+  place-items: center;
+}
+
+.report-date-field > span {
+  pointer-events: none;
+  grid-area: 1 / 1;
+}
+
+.report-date-field input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
 }
 
 .report-total {
