@@ -3,7 +3,7 @@ import { localRead, localWrite } from './offline';
 type Client={id:string;full_name:string;phone:string};
 type Tool={id:string;name:string;internal_number:string;daily_rate:number;default_deposit:number;purchase_cost:number;status:string};
 type Rental={id:string;client_id:string;full_name:string;tools:string[];tool_ids:string[];issue_date:string;planned_return_date:string;returned_date?:string;final_rental_amount:number;status:string};
-type Data={tools:Tool[];clients:Client[];rentals:Rental[];bookings:any[]};
+type Data={tools:Tool[];clients:Client[];rentals:Rental[];bookings:any[];maintenance?:any[]};
 
 const key='single-user-data';
 const id=()=>crypto.randomUUID();
@@ -30,9 +30,12 @@ export async function localApi<T>(url:string,options?:RequestInit):Promise<T>{
   if(method==='POST'&&returnMatch){
     const rental=d.rentals.find(r=>r.id===returnMatch[1]);if(!rental||rental.status!=='active')throw new Error('Эта аренда уже закрыта или не найдена');
     rental.status='completed';rental.returned_date=today();
-    rental.tool_ids.forEach(toolId=>{const tool=d.tools.find(t=>t.id===toolId);if(!tool)return;const hasBooking=d.bookings.some(b=>b.status==='active'&&(b.tool_ids?.includes(toolId)||(!b.tool_ids&&b.tools?.includes(tool.name)))&&b.planned_return_date>=today());tool.status=hasBooking?'reserved':'available'});
+    const serviceToolIds:string[]=body.service_tool_ids??[];d.maintenance??=[];
+    rental.tool_ids.forEach(toolId=>{const tool=d.tools.find(t=>t.id===toolId);if(!tool)return;if(serviceToolIds.includes(toolId)){tool.status='service';d.maintenance!.push({id:id(),tool_id:toolId,rental_id:rental.id,date:today(),comment:body.service_comment??'',expense:Number(body.service_expense??0)})}else{const hasBooking=d.bookings.some(b=>b.status==='active'&&(b.tool_ids?.includes(toolId)||(!b.tool_ids&&b.tools?.includes(tool.name)))&&b.planned_return_date>=today());tool.status=hasBooking?'reserved':'available'}});
     await save(d);return clone(rental) as T
   }
+  const rentalMatch=path.match(/^\/api\/rentals\/([^/]+)$/);
+  if(method==='PATCH'&&rentalMatch){const rental=d.rentals.find(r=>r.id===rentalMatch[1]);if(!rental)throw new Error('Аренда не найдена');const amount=Number(body.final_rental_amount);if(!Number.isFinite(amount)||amount<0)throw new Error('Укажите корректную сумму');Object.assign(rental,{final_rental_amount:amount,amount_note:body.amount_note??''});await save(d);return clone(rental) as T}
   if(method==='POST'&&path==='/api/rentals'){
     if(!body.client_id||!body.tool_ids?.length)throw new Error('Выберите клиента и хотя бы один инструмент');const chosen=d.tools.filter(t=>body.tool_ids.includes(t.id));
     if(chosen.length!==body.tool_ids.length||chosen.some(t=>t.status==='service'||t.status==='written_off'))throw new Error('Выберите только доступные инструменты');
