@@ -53,5 +53,18 @@ export async function localApi<T>(url:string,options?:RequestInit):Promise<T>{
     const client=d.clients.find(c=>c.id===body.client_id)!;const booking={id:id(),client_id:client.id,full_name:client.full_name,tools:chosen.map(t=>t.name),tool_ids:chosen.map(t=>t.id),start_date:body.start_date,planned_return_date:body.planned_return_date,status:'active'};
     chosen.forEach(t=>{const rentedNow=d.rentals.some(r=>r.status==='active'&&r.tool_ids.includes(t.id)&&r.issue_date<=today()&&r.planned_return_date>=today());t.status=rentedNow?'rented':'reserved'});d.bookings.push(booking);await save(d);return clone(booking) as T
   }
+  const cancelBookingMatch=path.match(/^\/api\/bookings\/([^/]+)\/cancel$/);
+  if(method==='POST'&&cancelBookingMatch){
+    const booking=d.bookings.find(b=>b.id===cancelBookingMatch[1]);
+    if(!booking||booking.status!=='active')throw new Error('Бронирование уже отменено или не найдено');
+    booking.status='cancelled';booking.cancelled_date=today();
+    (booking.tool_ids??[]).forEach((toolId:string)=>{
+      const tool=d.tools.find(t=>t.id===toolId);if(!tool||tool.status==='service'||tool.status==='written_off')return;
+      const rentedNow=d.rentals.some(r=>r.status==='active'&&r.tool_ids.includes(toolId)&&r.issue_date<=today()&&r.planned_return_date>=today());
+      const hasActiveBooking=d.bookings.some(b=>b.status==='active'&&(b.tool_ids?.includes(toolId)||(!b.tool_ids&&b.tools?.includes(tool.name)))&&b.planned_return_date>=today());
+      tool.status=rentedNow?'rented':hasActiveBooking?'reserved':'available';
+    });
+    await save(d);return clone(booking) as T
+  }
   throw new Error('Эта операция пока недоступна в локальной версии');
 }
