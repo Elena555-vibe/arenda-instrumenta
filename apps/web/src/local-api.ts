@@ -31,7 +31,11 @@ export async function localApi<T>(url:string,options?:RequestInit):Promise<T>{
   }
   if(method==='POST'&&path==='/api/rentals'){
     if(!body.client_id||!body.tool_ids?.length)throw new Error('Выберите клиента и хотя бы один инструмент');const chosen=d.tools.filter(t=>body.tool_ids.includes(t.id));
-    if(chosen.length!==body.tool_ids.length||chosen.some(t=>t.status!=='available'))throw new Error('Выберите только доступные инструменты');
+    if(chosen.length!==body.tool_ids.length||chosen.some(t=>t.status==='service'||t.status==='written_off'))throw new Error('Выберите только доступные инструменты');
+    const hasRentalConflict=(tool:Tool)=>d.rentals.some(r=>r.status==='active'&&r.tool_ids.includes(tool.id)&&overlaps(body.issue_date,body.planned_return_date,r.issue_date,r.planned_return_date));
+    const hasBookingConflict=(tool:Tool)=>d.bookings.some(b=>b.status==='active'&&(b.tool_ids?.includes(tool.id)||(!b.tool_ids&&b.tools?.includes(tool.name)))&&overlaps(body.issue_date,body.planned_return_date,b.start_date,b.planned_return_date));
+    if(chosen.some(hasRentalConflict))throw new Error('Инструмент уже занят в другой аренде на выбранные даты');
+    if(chosen.some(hasBookingConflict))throw new Error('Инструмент уже забронирован на выбранные даты');
     const days=Math.max(1,Math.round((Date.parse(body.planned_return_date)-Date.parse(body.issue_date))/86400000));const amount=body.final_rental_amount||chosen.reduce((s,t)=>s+t.daily_rate*days,0);const client=d.clients.find(c=>c.id===body.client_id)!;
     const rental={id:id(),client_id:client.id,full_name:client.full_name,tools:chosen.map(t=>t.name),tool_ids:chosen.map(t=>t.id),issue_date:body.issue_date,planned_return_date:body.planned_return_date,final_rental_amount:amount,status:'active'};chosen.forEach(t=>t.status='rented');d.rentals.push(rental);await save(d);return clone(rental) as T
   }
