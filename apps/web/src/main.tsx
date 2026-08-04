@@ -6,6 +6,7 @@ import './calendar.css';
 import './modal.css';
 import './forms.css';
 import './home.css';
+import './report-controls.css';
 import './mobile-fit.css';
 
 type Tool={id:string;name:string;internal_number:string;daily_rate:number;default_deposit:number;status:string;brand?:string;model?:string}; type Rental={id:string;full_name:string;tools:string[];tool_ids:string[];issue_date:string;planned_return_date:string;final_rental_amount:number;status:string}; type Booking={id:string;full_name:string;tools:string[];tool_ids?:string[];start_date:string;planned_return_date:string;status:string};
