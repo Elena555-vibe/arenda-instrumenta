@@ -1,6 +1,24 @@
-.nav-drill {
+.nav-icon {
   width: 20px;
   height: 20px;
   display: block;
-  margin: auto;
+}
+
+nav button {
+  grid-template-rows: 20px 16px;
+  align-content: center;
+  justify-items: center;
+  gap: 3px;
+  font-size: 11px;
+  line-height: 16px;
+  font-weight: 500;
+}
+
+nav button > span {
+  display: block;
+  white-space: nowrap;
+}
+
+nav .active {
+  font-weight: 500;
 }
