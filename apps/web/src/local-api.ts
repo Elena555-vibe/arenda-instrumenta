@@ -2,7 +2,7 @@ import { localRead, localWrite } from './offline';
 
 type Client={id:string;full_name:string;phone:string};
 type Tool={id:string;name:string;internal_number:string;daily_rate:number;default_deposit:number;purchase_cost:number;status:string};
-type Rental={id:string;client_id:string;full_name:string;tools:string[];tool_ids:string[];issue_date:string;planned_return_date:string;final_rental_amount:number;status:string};
+type Rental={id:string;client_id:string;full_name:string;tools:string[];tool_ids:string[];issue_date:string;planned_return_date:string;returned_date?:string;final_rental_amount:number;status:string};
 type Data={tools:Tool[];clients:Client[];rentals:Rental[];bookings:any[]};
 
 const key='single-user-data';
@@ -19,6 +19,7 @@ export async function localApi<T>(url:string,options?:RequestInit):Promise<T>{
   if(method==='GET'&&path==='/api/clients')return clone(d.clients) as T;
   if(method==='GET'&&path==='/api/rentals')return clone(d.rentals) as T;
   if(method==='GET'&&path==='/api/bookings')return clone(d.bookings) as T;
+  if(method==='GET'&&path==='/api/reports'){const params=new URLSearchParams(url.split('?')[1]??'');const from=params.get('from')??'0000-01-01';const to=params.get('to')??'9999-12-31';const rentals=d.rentals.filter(r=>r.status==='completed'&&((r.returned_date??r.planned_return_date)>=from)&&((r.returned_date??r.planned_return_date)<=to));return clone({total:rentals.reduce((sum,r)=>sum+r.final_rental_amount,0),rentals}) as T}
   if(method==='GET'&&path==='/api/dashboard'){const due=today();const rentals=d.rentals.filter(r=>r.status==='active');return {today:due,counters:{overdue:rentals.filter(r=>r.planned_return_date<due).length,due_today:rentals.filter(r=>r.planned_return_date===due).length,pickup_today:d.bookings.filter(b=>b.status==='active'&&b.start_date===due).length},rentals:clone(rentals)} as T}
   if(method==='POST'&&path==='/api/clients'){const client={id:id(),...body};d.clients.push(client);await save(d);return clone(client) as T}
   if(method==='POST'&&path==='/api/tools'){if(d.tools.some(t=>t.internal_number===body.internal_number))throw new Error('Не удалось создать инструмент');const tool={id:id(),status:'available',...body};d.tools.push(tool);await save(d);return clone(tool) as T}
@@ -28,7 +29,7 @@ export async function localApi<T>(url:string,options?:RequestInit):Promise<T>{
   const returnMatch=path.match(/^\/api\/rentals\/([^/]+)\/return$/);
   if(method==='POST'&&returnMatch){
     const rental=d.rentals.find(r=>r.id===returnMatch[1]);if(!rental||rental.status!=='active')throw new Error('Эта аренда уже закрыта или не найдена');
-    rental.status='completed';
+    rental.status='completed';rental.returned_date=today();
     rental.tool_ids.forEach(toolId=>{const tool=d.tools.find(t=>t.id===toolId);if(!tool)return;const hasBooking=d.bookings.some(b=>b.status==='active'&&(b.tool_ids?.includes(toolId)||(!b.tool_ids&&b.tools?.includes(tool.name)))&&b.planned_return_date>=today());tool.status=hasBooking?'reserved':'available'});
     await save(d);return clone(rental) as T
   }
