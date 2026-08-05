@@ -5,9 +5,10 @@
 }
 
 nav button {
-  grid-template-rows: 20px 16px;
-  align-content: center;
-  justify-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 3px;
   font-size: 11px;
   line-height: 16px;
@@ -16,6 +17,7 @@ nav button {
 
 nav button > span {
   display: block;
+  height: 16px;
   white-space: nowrap;
 }
 
